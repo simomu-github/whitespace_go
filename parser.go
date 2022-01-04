@@ -22,10 +22,17 @@ type Parser struct {
 	currentLine   int
 	currentColumn int
 	newLine       bool
-	instructions  []Instruction
+	Instructions  []Instruction
 }
 
-func (parser *Parser) parseAll() error {
+func NewParser(filename string, rawSourceCode string) Parser {
+	return Parser{
+		filename:      filename,
+		rawSourceCode: rawSourceCode,
+	}
+}
+
+func (parser *Parser) ParseAll() error {
 	parser.sourceCode = []rune(parser.rawSourceCode)
 	parser.currentIndex = -1
 	parser.currentLine = 1
@@ -33,7 +40,7 @@ func (parser *Parser) parseAll() error {
 	parser.newLine = false
 
 	instructions, err := parser.parse()
-	parser.instructions = instructions
+	parser.Instructions = instructions
 
 	return err
 }
@@ -53,12 +60,12 @@ func (parser *Parser) parse() ([]Instruction, error) {
 		case LF:
 			return parser.parseIO()
 		default:
-			return parser.instructions, parseError(parser, "expected instruction modification parameters")
+			return parser.Instructions, parseError(parser, "expected instruction modification parameters")
 		}
 	case LF:
 		return parser.parseFlowControll()
 	default:
-		return parser.instructions, nil
+		return parser.Instructions, nil
 	}
 }
 
@@ -68,7 +75,7 @@ func (parser *Parser) parseStackManipulation() ([]Instruction, error) {
 	case SPACE:
 		n, err := parser.parseNumber()
 		if err != nil {
-			return parser.instructions, err
+			return parser.Instructions, err
 		}
 
 		return parser.addInstruction(Push{value: n})
@@ -82,10 +89,10 @@ func (parser *Parser) parseStackManipulation() ([]Instruction, error) {
 		case LF:
 			return parser.addInstruction(Discard{})
 		default:
-			return parser.instructions, parseError(parser, "expected stack manipulation command")
+			return parser.Instructions, parseError(parser, "expected stack manipulation command")
 		}
 	default:
-		return parser.instructions, parseError(parser, "expected stack manipulation command")
+		return parser.Instructions, parseError(parser, "expected stack manipulation command")
 	}
 }
 
@@ -97,7 +104,7 @@ func (parser *Parser) parseHeapAccess() ([]Instruction, error) {
 	case TAB:
 		return parser.addInstruction(Retrieve{})
 	default:
-		return parser.instructions, parseError(parser, "expected heap access command")
+		return parser.Instructions, parseError(parser, "expected heap access command")
 	}
 }
 
@@ -114,7 +121,7 @@ func (parser *Parser) parseArithmetic() ([]Instruction, error) {
 		case LF:
 			return parser.addInstruction(Multiplication{})
 		default:
-			return parser.instructions, parseError(parser, "expected artithemetic command")
+			return parser.Instructions, parseError(parser, "expected artithemetic command")
 		}
 	case TAB:
 		token = parser.nextToken()
@@ -124,10 +131,10 @@ func (parser *Parser) parseArithmetic() ([]Instruction, error) {
 		case TAB:
 			return parser.addInstruction(Modulo{})
 		default:
-			return parser.instructions, parseError(parser, "expected artithemetic command")
+			return parser.Instructions, parseError(parser, "expected artithemetic command")
 		}
 	default:
-		return parser.instructions, parseError(parser, "expected artithemetic command")
+		return parser.Instructions, parseError(parser, "expected artithemetic command")
 	}
 }
 
@@ -142,7 +149,7 @@ func (parser *Parser) parseIO() ([]Instruction, error) {
 		case TAB:
 			return parser.addInstruction(Putn{})
 		default:
-			return parser.instructions, parseError(parser, "expected I/O command")
+			return parser.Instructions, parseError(parser, "expected I/O command")
 		}
 	case TAB:
 		token = parser.nextToken()
@@ -152,10 +159,10 @@ func (parser *Parser) parseIO() ([]Instruction, error) {
 		case TAB:
 			return parser.addInstruction(Getn{})
 		default:
-			return parser.instructions, parseError(parser, "expected I/O command")
+			return parser.Instructions, parseError(parser, "expected I/O command")
 		}
 	default:
-		return parser.instructions, parseError(parser, "expected I/O command")
+		return parser.Instructions, parseError(parser, "expected I/O command")
 	}
 }
 
@@ -168,26 +175,26 @@ func (parser *Parser) parseFlowControll() ([]Instruction, error) {
 		case SPACE:
 			label, err := parser.parseLabel()
 			if err != nil {
-				return parser.instructions, err
+				return parser.Instructions, err
 			}
 
 			return parser.addInstruction(MarkLabel{label: label})
 		case TAB:
 			label, err := parser.parseLabel()
 			if err != nil {
-				return parser.instructions, err
+				return parser.Instructions, err
 			}
 
 			return parser.addInstruction(CallSubroutine{label: label})
 		case LF:
 			label, err := parser.parseLabel()
 			if err != nil {
-				return parser.instructions, err
+				return parser.Instructions, err
 			}
 
 			return parser.addInstruction(JumpLabel{label: label})
 		default:
-			return parser.instructions, parseError(parser, "expected flow controll command")
+			return parser.Instructions, parseError(parser, "expected flow controll command")
 		}
 	case TAB:
 		token = parser.nextToken()
@@ -195,31 +202,31 @@ func (parser *Parser) parseFlowControll() ([]Instruction, error) {
 		case SPACE:
 			label, err := parser.parseLabel()
 			if err != nil {
-				return parser.instructions, err
+				return parser.Instructions, err
 			}
 
 			return parser.addInstruction(JumpLabelWhenZero{label: label})
 		case TAB:
 			label, err := parser.parseLabel()
 			if err != nil {
-				return parser.instructions, err
+				return parser.Instructions, err
 			}
 
 			return parser.addInstruction(JumpLabelWhenNegative{label: label})
 		case LF:
 			return parser.addInstruction(EndSubroutine{})
 		default:
-			return parser.instructions, parseError(parser, "expected flow controll command")
+			return parser.Instructions, parseError(parser, "expected flow controll command")
 		}
 	case LF:
 		token = parser.nextToken()
 		if string(token) == LF {
 			return parser.addInstruction(EndProgram{})
 		} else {
-			return parser.instructions, parseError(parser, "expected flow controll command")
+			return parser.Instructions, parseError(parser, "expected flow controll command")
 		}
 	default:
-		return parser.instructions, parseError(parser, "expected flow controll command")
+		return parser.Instructions, parseError(parser, "expected flow controll command")
 	}
 }
 
@@ -278,7 +285,7 @@ func (parser *Parser) parseLabel() (string, error) {
 }
 
 func (parser *Parser) addInstruction(instruction Instruction) ([]Instruction, error) {
-	parser.instructions = append(parser.instructions, instruction)
+	parser.Instructions = append(parser.Instructions, instruction)
 	return parser.parse()
 }
 
