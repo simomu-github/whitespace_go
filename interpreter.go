@@ -53,14 +53,14 @@ func (i *Interpreter) Run() int {
 		return 1
 	}
 
-	i.parser = Parser{filename: filename, rawSourceCode: string(bytes)}
-	errParse := i.parser.parseAll()
+	i.parser = NewParser(filename, string(bytes))
+	errParse := i.parser.ParseAll()
 	if errParse != nil {
 		fmt.Fprintln(i.stderr, errParse.Error())
 		return 1
 	}
 
-	i.executor = Executor{instructions: i.parser.instructions}
+	i.executor = Executor{instructions: i.parser.Instructions}
 	errRuntime := i.executor.Run()
 	if errRuntime != nil {
 		fmt.Fprintln(i.stderr, errRuntime.Error())
