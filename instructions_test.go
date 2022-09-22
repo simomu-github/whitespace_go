@@ -1,8 +1,9 @@
 package whitespace_go
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func newExecutor() *Executor {
@@ -63,7 +64,7 @@ func TestAddition(t *testing.T) {
 
 func TestSubtraction(t *testing.T) {
 	executor := newExecutor()
-	executor.stack = []int{1, 2}
+	executor.stack = []int{2, 1}
 
 	subtraction := Subtraction{}
 	subtraction.Execute(executor)
@@ -93,7 +94,7 @@ func TestDivision(t *testing.T) {
 
 func TestModulo(t *testing.T) {
 	executor := newExecutor()
-	executor.stack = []int{3, 5}
+	executor.stack = []int{5, 3}
 
 	modulo := Modulo{}
 	modulo.Execute(executor)
