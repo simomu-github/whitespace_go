@@ -63,14 +63,14 @@ func (d Discard) Execute(executor *Executor) error {
 type Addition struct{}
 
 func (a Addition) Execute(executor *Executor) error {
-	lhs, errLhs := executor.Pop()
-	if errLhs != nil {
-		return errLhs
-	}
-
 	rhs, errRhs := executor.Pop()
 	if errRhs != nil {
 		return errRhs
+	}
+
+	lhs, errLhs := executor.Pop()
+	if errLhs != nil {
+		return errLhs
 	}
 
 	executor.Push(lhs + rhs)
@@ -81,14 +81,14 @@ func (a Addition) Execute(executor *Executor) error {
 type Subtraction struct{}
 
 func (s Subtraction) Execute(executor *Executor) error {
-	lhs, errLhs := executor.Pop()
-	if errLhs != nil {
-		return errLhs
-	}
-
 	rhs, errRhs := executor.Pop()
 	if errRhs != nil {
 		return errRhs
+	}
+
+	lhs, errLhs := executor.Pop()
+	if errLhs != nil {
+		return errLhs
 	}
 
 	executor.Push(lhs - rhs)
@@ -99,14 +99,14 @@ func (s Subtraction) Execute(executor *Executor) error {
 type Multiplication struct{}
 
 func (m Multiplication) Execute(executor *Executor) error {
-	lhs, errLhs := executor.Pop()
-	if errLhs != nil {
-		return errLhs
-	}
-
 	rhs, errRhs := executor.Pop()
 	if errRhs != nil {
 		return errRhs
+	}
+
+	lhs, errLhs := executor.Pop()
+	if errLhs != nil {
+		return errLhs
 	}
 
 	executor.Push(lhs * rhs)
@@ -117,14 +117,14 @@ func (m Multiplication) Execute(executor *Executor) error {
 type Division struct{}
 
 func (d Division) Execute(executor *Executor) error {
-	lhs, errLhs := executor.Pop()
-	if errLhs != nil {
-		return errLhs
-	}
-
 	rhs, errRhs := executor.Pop()
 	if errRhs != nil {
 		return errRhs
+	}
+
+	lhs, errLhs := executor.Pop()
+	if errLhs != nil {
+		return errLhs
 	}
 
 	executor.Push(lhs / rhs)
@@ -135,14 +135,14 @@ func (d Division) Execute(executor *Executor) error {
 type Modulo struct{}
 
 func (m Modulo) Execute(executor *Executor) error {
-	lhs, errLhs := executor.Pop()
-	if errLhs != nil {
-		return errLhs
-	}
-
 	rhs, errRhs := executor.Pop()
 	if errRhs != nil {
 		return errRhs
+	}
+
+	lhs, errLhs := executor.Pop()
+	if errLhs != nil {
+		return errLhs
 	}
 
 	executor.Push(lhs % rhs)
